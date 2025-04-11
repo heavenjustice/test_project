@@ -1,6 +1,4 @@
 import streamlit as st
-from langchain_openai import ChatOpenAI
-from langchain_community.embeddings import ZhipuAIEmbeddings
 from zhipuai_llm import ZhipuaiLLM
 import os
 from langchain_core.output_parsers import StrOutputParser
@@ -8,17 +6,17 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableBranch, RunnablePassthrough
 import sys
 sys.path.append("notebook/C3 搭建知识库") # 将父目录放入系统路径中
-from zhipuai_embedding import ZhipuAIEmbeddings
+from langchain_community.embeddings import ZhipuAIEmbeddings
 from langchain_community.vectorstores import Chroma
 
-api_key = "84114f5383374935ad2447081b781d6e.Vev20XcxVQQILGKW"
+
+os.environ["ZHIPUAI_API_KEY"] = "84114f5383374935ad2447081b781d6e.Vev20XcxVQQILGKW"
 
 def get_retriever():
     # 定义 Embeddings
     embedding = ZhipuAIEmbeddings(
-        api_key=api_key,
+        api_key=os.environ["ZHIPUAI_API_KEY"],
         model="embedding-3",
-        # embedding_model="text-embedding-3-small"
     )
     # 向量数据库持久化路径
     persist_directory = 'data_base/vector_db/chroma'
@@ -34,7 +32,7 @@ def combine_docs(docs):
 
 def get_qa_history_chain():
     retriever = get_retriever()
-    zhipuai_model = ZhipuaiLLM(model_name="glm-4-plus", temperature=0.0, api_key=api_key)
+    zhipuai_model = ZhipuaiLLM(model_name="glm-4-plus", temperature=0.0, api_key=os.environ["ZHIPUAI_API_KEY"])
     condense_question_system_template = (
         "请根据聊天记录总结用户最近的问题，"
         "如果没有多余的聊天记录则返回用户的问题。"
